@@ -1,16 +1,22 @@
 export default class Player {
     dinoRunImages = [];
 
+    jumpPressed = false;
+    jumpInProgress = false;
+    falling = false;
+    JUMP_SPEED = 0.6;
+
     constructor(ctx, width, height, minJumpHeight, maxJumpHeight) {
         this.ctx = ctx;
         this.canvas = ctx.canvas;
         this.width = width;
-        this.height = height;
+        this.height = height; 
         this.minJumpHeight = minJumpHeight;
         this.maxJumpHeight = maxJumpHeight;
 
         this.x = 10;
         this.y = this.canvas.height - this.height;
+        this.yStandingPosition = this.y;
 
         this.standingStillImage = new Image();
         this.standingStillImage.src = "images/standing_still.png";
@@ -25,7 +31,7 @@ export default class Player {
         this.dinoRunImages.push(dinoRunImage1);
         this.dinoRunImages.push(dinoRunImage2);
 
-        //keyboard
+        // keyboard
         window.removeEventListener("keydown", this.keydown);
         window.removeEventListener("keyup", this.keyup);
 
@@ -60,7 +66,7 @@ export default class Player {
 
     jump() {
         if (this.jumpPressed) {
-            this.jumpInProgress = true;
+            this.jumpInProgress =  true;
         }
 
         if (this.jumpInProgress && !this.falling) {
@@ -68,9 +74,21 @@ export default class Player {
                 this.y > this.canvas.height - this.minJumpHeight ||
                 (this.y > this.canvas.height - this.maxJumpHeight && this.jumpPressed)
             ) {
-                this.y -= this.JUMP_SPEED * frameTimeDelta * this.scaleRatio;
+                // this.y -= this.JUMP_SPEED; // * frameTimeDelta * this.scaleRatio;
+                this.y -= 10;
             } else {
-                this.falling = true;
+                this.falling = true; 
+            }
+        }
+        else {
+            if (this.y < this.yStandingPosition) {
+                this.y += 10; // this.GRAVITY * frameTimeDelta * this.scaleRatio;
+                if (this.y + this.height > this.canvas.height) {
+                this.y = this.yStandingPosition;
+                }
+            } else {
+                this.falling = false;
+                this.jumpInProgress = false;
             }
         }
     }
